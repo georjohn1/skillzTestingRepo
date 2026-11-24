@@ -1,0 +1,761 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1B0B2E">
+<title>Skillz Cypher — Voice Test</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,600&display=swap">
+<style>
+:root{color-scheme:dark;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<style>
+/* Layout: one phone-width column; the mic and the answer field are the focal objects */
+:root{
+  --bg:#1B0B2E;--surface:#2B1650;--surface-2:#351C60;--line:#4A2C7A;
+  --green:#3DF56B;--pink:#FF2E87;--pink-deep:#4A0B2A;--mint:#CFF5B4;
+  --violet:#8B6FD4;--text:#FFFFFF;--muted:#B9A5D9;--dim:#7E66AB;--amber:#FFC24D;
+  --display:"Anton","Arial Narrow",system-ui,sans-serif;
+  --body:"Barlow","Helvetica Neue",system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:430px;margin:0 auto;min-height:100%;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:14px 28px;display:flex;flex-direction:column;gap:14px}
+.topbar{display:flex;align-items:center;justify-content:space-between;min-height:40px}
+.chip{width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.chip:disabled{opacity:.35;cursor:default}
+.logo{font-family:var(--display);font-size:30px;color:#fff;line-height:1;transform:skewX(-7deg);text-shadow:2px 2px 0 var(--violet)}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--pink);margin:0}
+.eyebrow.g{color:var(--green)}
+h1.screen{font-family:var(--display);font-size:clamp(30px,8.5vw,40px);line-height:1.02;margin:4px 0 6px;text-transform:uppercase;letter-spacing:.5px;text-wrap:balance}
+.lede{margin:0 0 4px;color:var(--muted);font-size:15px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px}
+.btn{width:100%;border:0;border-radius:14px;padding:17px 18px;cursor:pointer;font-family:var(--display);font-size:19px;letter-spacing:.6px;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:10px}
+.btn-green{background:var(--green);color:#06230F}
+.btn-pink{background:var(--pink);color:#fff}
+.btn-ghost{background:transparent;border:1px solid var(--violet);color:#CDBCF0}
+.btn:disabled{opacity:.4;cursor:default}
+.btn:focus-visible,.chip:focus-visible,.opt:focus-visible,input:focus-visible,#micBtn:focus-visible{outline:3px solid var(--green);outline-offset:2px}
+.foot{text-align:center;color:var(--dim);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;margin:2px 0 0}
+.spacer{flex:1}
+.who{display:flex;align-items:center;gap:11px;background:var(--surface-2);border:1px solid var(--line);border-radius:13px;padding:10px 12px}
+.who .av{width:36px;height:36px;border-radius:9px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:17px;flex:none}
+.who .m{flex:1;min-width:0}
+.who .m b{display:block;font-size:14.5px;font-weight:600}
+.who .m span{display:block;font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--dim)}
+.tag{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--green);flex:none}
+.sizes{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.opt{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:11px 4px;cursor:pointer;color:var(--text);font-family:var(--body);display:flex;flex-direction:column;align-items:center;gap:2px}
+.opt .n{font-family:var(--display);font-size:21px;line-height:1}
+.opt .s{font-size:9.5px;color:var(--dim)}
+.opt[aria-pressed="true"]{background:var(--green);border-color:var(--green);color:#06230F}
+.opt[aria-pressed="true"] .s{color:#0C3A1C}
+.lbl{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:block;margin:0 0 7px}
+.wheelwrap{display:flex;flex-direction:column;align-items:center;gap:12px;padding:4px 0}
+#wheelBtn{background:none;border:0;padding:0;cursor:pointer;position:relative;line-height:0;border-radius:50%}
+#wheelBtn:focus-visible{outline:3px solid var(--green);outline-offset:6px}
+#wheelSpin{transition:transform 4s cubic-bezier(.17,.67,.14,1)}
+.needle{position:absolute;top:-2px;left:50%;transform:translateX(-50%);font-size:22px;color:var(--pink)}
+.hint{font-size:12.5px;color:var(--muted);text-align:center;margin:0}
+.landed{border-radius:14px;padding:14px 15px;border:1px solid}
+.landed .k{font-size:10.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;margin:0 0 3px}
+.landed h3{font-family:var(--display);font-size:24px;margin:0 0 4px;text-transform:uppercase}
+.landed p{margin:0;font-size:13.5px;line-height:1.45}
+.qmeta{display:flex;align-items:center;justify-content:space-between}
+.deckpill{display:flex;align-items:center;gap:8px}
+.deckpill .sq{width:23px;height:23px;border-radius:7px;background:var(--green);color:#06230F;font-family:var(--display);font-size:14px;display:flex;align-items:center;justify-content:center}
+.deckpill span{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.qcard{background:var(--mint);color:#0E2A12;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px;min-height:140px}
+.qcard .row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.qcard .letter{font-family:var(--display);font-size:26px;line-height:1}
+.clock{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;background:#0E2A12;color:var(--mint);border-radius:999px;padding:3px 11px}
+.clock.low{background:#8C1437;color:#fff}
+.qtext{font-size:19px;font-weight:600;line-height:1.3;margin:0;flex:1}
+.qcard .val{font-size:10.5px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;opacity:.72}
+
+/* mic */
+.miczone{display:flex;flex-direction:column;align-items:center;gap:9px;padding:2px 0}
+#micBtn{width:92px;height:92px;border-radius:50%;border:3px solid var(--line);background:var(--surface);
+  color:var(--muted);font-size:34px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .15s}
+#micBtn:active{transform:scale(.96)}
+#micBtn.live{background:var(--pink);border-color:var(--pink);color:#fff;animation:pulse 1.4s ease-in-out infinite}
+#micBtn.starting{background:var(--surface-2);border-color:var(--violet);color:#CDBCF0}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,46,135,.55)}50%{box-shadow:0 0 0 16px rgba(255,46,135,0)}}
+/* The live guess has to be big enough to notice: seeing words appear is
+   how a player knows the mic is hearing them. */
+#partial{font-size:19px;font-weight:600;color:var(--green);min-height:26px;text-align:center;
+  margin:0;word-break:break-word;letter-spacing:.2px}
+.exportrow{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.exportrow .btn{padding:13px 10px;font-size:15px}
+.diag{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10.5px;line-height:1.5;
+  background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px;
+  color:#CDBCF0;margin:0 0 9px;white-space:pre-wrap;word-break:break-word;overflow-x:auto}
+.diag.tall{max-height:240px;overflow-y:auto;white-space:pre}
+input.text{width:100%;background:var(--surface);border:2px solid var(--line);border-radius:13px;padding:15px;color:#fff;font-family:var(--body);font-size:18px}
+input.text:focus{border-color:var(--green);outline:none}
+input.text::placeholder{color:#6B5595}
+.warn{background:#3A2A06;border:1px solid var(--amber);border-radius:13px;padding:13px 14px;font-size:13.5px;color:#FFE4AE;line-height:1.45}
+.warn b{color:var(--amber)}
+.underline{font-size:12px;color:var(--dim);text-align:center;margin:0}
+.verdict{border-radius:16px;padding:20px 16px;text-align:center;border:2px solid}
+.verdict.ok{background:#15351F;border-color:var(--green)}
+.verdict.no{background:var(--pink-deep);border-color:var(--pink)}
+.verdict .mark{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 9px;font-size:24px;font-weight:700}
+.verdict.ok .mark{background:var(--green);color:#06230F}
+.verdict.no .mark{background:var(--pink);color:#fff}
+.verdict .big{font-family:var(--display);font-size:42px;line-height:1}
+.verdict.ok .big{color:var(--green)}.verdict.no .big{color:var(--pink)}
+.verdict .cap{font-size:10.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;margin-top:2px}
+.verdict.ok .cap{color:var(--green)}.verdict.no .cap{color:var(--pink)}
+.verdict .sub{font-size:12.5px;color:var(--muted);margin-top:7px}
+.review .q{font-size:14px;font-weight:600;margin:0 0 11px;line-height:1.35}
+.ansrow{display:flex;align-items:center;gap:9px;border-radius:11px;padding:10px 12px;margin-bottom:8px;font-size:14.5px}
+.ansrow .ic{width:19px;height:19px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.ansrow.good{background:#16331F;border:1px solid var(--green)}
+.ansrow.good .ic{background:var(--green);color:#06230F}
+.ansrow.bad{background:#3A1026;border:1px solid var(--pink)}
+.ansrow.bad .ic{background:var(--pink);color:#fff}
+.ansrow .txt{flex:1;min-width:0;word-break:break-word}
+.ansrow .lab{font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);flex:none}
+.note{font-size:12.5px;color:var(--muted);line-height:1.45;margin:9px 0 0}
+.movement{display:flex;align-items:center;gap:9px;margin-top:13px}
+.movement .ar{font-size:17px}
+.movement b{font-size:14px;font-weight:600;display:block}
+.movement em{font-style:normal;font-size:11.5px;color:var(--dim);display:block}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.stat{background:var(--surface);border-radius:13px;padding:13px 10px;text-align:center}
+.stat b{font-family:var(--display);font-size:27px;line-height:1;display:block}
+.stat span{font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.logrow{border-bottom:1px solid var(--line);padding:11px 0;font-size:13.5px}
+.logrow:last-child{border-bottom:0}
+.logrow .lq{color:var(--muted);font-size:12.5px;margin:0 0 4px;line-height:1.35}
+.logrow .la{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pill{font-size:9.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;border-radius:999px;padding:2px 8px;flex:none}
+.pill.ok{background:var(--green);color:#06230F}
+.pill.no{background:var(--pink);color:#fff}
+.pill.near{background:#C98A1E;color:#2A1A02}
+.pill.spoke{background:var(--violet);color:#1B0B2E}
+.typed{font-weight:600;word-break:break-word}
+@media (prefers-reduced-motion:reduce){#wheelSpin{transition-duration:.3s}#micBtn.live{animation:none}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <button class="chip" id="backBtn" aria-label="Back">&#8592;</button>
+    <div class="logo">Skillz</div>
+  </div>
+  <div id="view"></div>
+</div>
+
+<script>
+const DECK=[
+ {id:"k01",q:'Name the pioneer group that wrote the hip-hop classic "My Adidas."',a:"Run-DMC",accept:["run dmc","rundmc","run d m c"],note:"Run-DMC released My Adidas on Raising Hell in 1986."},
+ {id:"k02",q:'The movie "House Party" is an urban classic. Name the rapping duo the movie centers around.',a:"Kid 'n Play",accept:["kid n play","kid and play","kidnplay","kid play"],note:"Christopher Reid and Christopher Martin starred in House Party in 1990."},
+ {id:"k03",q:"Which MC passed Elvis Presley in 2009 for the most number one albums, trailing only The Beatles?",a:"Jay-Z",accept:["jay z","jayz","shawn carter","hov","jigga"],note:"The Blueprint 3 was his eleventh number one album."},
+ {id:"k04",q:"Name the hip-hop mogul who was part-owner of the New Jersey Nets.",a:"Jay-Z",accept:["jay z","jayz","shawn carter","hov","jigga"],note:"He held a minority stake until selling it in 2013."},
+ {id:"k05",q:"The movie Friday is an urban classic. Name the hip-hop legend who wrote the screenplay.",a:"Ice Cube",accept:["ice cube","icecube","oshea jackson","o shea jackson"],note:"Ice Cube co-wrote it with DJ Pooh and starred as Craig."},
+ {id:"k06",q:'"My President Is Black" became an urban campaign song for Barack Obama. Which artist originated it?',a:"Young Jeezy",accept:["young jeezy","jeezy","jay jenkins"],note:"It appeared on The Recession in 2008."},
+ {id:"k07",q:'Name the hip-hop legend who played "Cleo" in the movie Set It Off.',a:"Queen Latifah",accept:["queen latifah","latifah","dana owens"],note:"Her performance as Cleo is often cited as her breakout dramatic role."},
+ {id:"k08",q:"Name the producer who introduced Lil Bow Wow to the national hip-hop scene.",a:"Jermaine Dupri",accept:["jermaine dupri","dupri","jd"],note:"Dupri signed him to So So Def and produced Beware of Dog."},
+ {id:"k09",q:'Name the MC who goes by the nickname "The Queen Bee."',a:"Lil' Kim",accept:["lil kim","lilkim","kimberly jones","queen bee"],note:"Kimberly Jones came up through Junior M.A.F.I.A."},
+ {id:"k10",q:'Name the Canadian-born MC who got his start acting on the Nickelodeon show "Degrassi."',a:"Drake",accept:["drake","aubrey graham","aubrey drake graham"],note:"He played Jimmy Brooks before releasing So Far Gone."},
+ {id:"k11",q:"What group was Lil Wayne part of before he went solo?",a:"The Hot Boys",accept:["hot boys","hotboys","hott boyz","hot boyz"],note:"Juvenile, B.G., Turk and Lil Wayne, on Cash Money."},
+ {id:"k12",q:"Before going solo, what duo was Rakim part of?",a:"Eric B. & Rakim",accept:["eric b and rakim","eric b rakim","eric b","ericb and rakim"],note:"They released Paid in Full in 1987."},
+ {id:"k13",q:"Name the producer who introduced Snoop Dogg to the world in 1993.",a:"Dr. Dre",accept:["dr dre","doctor dre","dre","andre young"],note:"Snoop debuted on The Chronic, then released Doggystyle."},
+ {id:"k14",q:'"Pink Friday" was a commercial success. Name the MC behind the album.',a:"Nicki Minaj",accept:["nicki minaj","nikki minaj","nicki","onika","onika maraj"],note:"Her debut studio album, released in 2010."},
+ {id:"k15",q:'What multi-talented producer created the clothing line "Sean John"?',a:"Sean Combs",accept:["sean combs","p diddy","puff daddy","puffy","diddy","sean puffy combs","sean john combs"],note:"He launched Sean John in 1998."},
+ {id:"k16",q:"Name the MC duo featuring Big Boi and Andre 3000.",a:"OutKast",accept:["outkast","out kast","outcast"],note:"The Atlanta duo debuted with Southernplayalisticadillacmuzik in 1994."},
+ {id:"k17",q:'The movie "8 Mile" is based on the real life of which MC?',a:"Eminem",accept:["eminem","marshall mathers","slim shady","em"],note:"Lose Yourself, from its soundtrack, won an Academy Award."},
+ {id:"k18",q:"Before going solo, The Fresh Prince was part of a duo. Name his partner.",a:"DJ Jazzy Jeff",accept:["dj jazzy jeff","jazzy jeff","jeff townes"],note:"They won the first rap Grammy in 1989."},
+ {id:"k19",q:'This group said it would take a "Nation of Millions" to hold them back and told listeners to "Fight the Power."',a:"Public Enemy",accept:["public enemy","publicenemy"],note:"Fight the Power anchored Do the Right Thing in 1989."},
+ {id:"k20",q:"Willie D, Bushwick Bill and Scarface are all members of what Texas-based group?",a:"Geto Boys",accept:["geto boys","ghetto boys","getoboys","the geto boys"],note:"Houston's Geto Boys released Mind Playing Tricks on Me in 1991."},
+ {id:"k21",q:'Known for the album "Trilla" and calling himself "The Teflon Don," this Florida MC is a force in the industry.',a:"Rick Ross",accept:["rick ross","ross","rozay","william roberts","officer ricky"],note:"Trilla was his second album, released in 2008."},
+ {id:"k22",q:'Name the female MC who played the hot-tempered "Terri" in the movie Barbershop.',a:"Eve",accept:["eve","eve jeffers","eve cooper"],note:"Eve played Terri Jones in Barbershop in 2002."}
+];
+
+function normalize(s){
+  return (s||"").toLowerCase().replace(/[‘’'`]/g,"").replace(/&/g," and ")
+    .replace(/[^a-z0-9\s]/g," ").replace(/\b(the|a|an|by|of|its|is|was)\b/g," ")
+    .replace(/\s+/g," ").trim();
+}
+function lev(a,b){
+  if(a===b)return 0;const m=a.length,n=b.length;if(!m)return n;if(!n)return m;
+  let prev=Array.from({length:n+1},(_,j)=>j),cur=new Array(n+1);
+  for(let i=1;i<=m;i++){cur[0]=i;
+    for(let j=1;j<=n;j++)cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));
+    [prev,cur]=[cur,prev];}
+  return prev[n];
+}
+function hasWords(hay,needle){
+  return new RegExp("(^|\\s)"+needle.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"($|\\s)").test(hay);
+}
+/* Typo tolerance scales with length and is off under four characters, where
+   short answers sit within an edit or two of unrelated words. */
+function fuzzy(got,acc){
+  if(got.length<4||acc.length<4)return{ok:false,near:false,d:lev(got,acc)};
+  const d=lev(got,acc),L=Math.max(got.length,acc.length);
+  return{ok:d<=Math.max(1,Math.floor(L*0.30)),near:d<=Math.max(2,Math.floor(L*0.45)),d};
+}
+function judge(input,item){
+  const got=normalize(input);
+  if(!got)return{verdict:"wrong",matched:null,distance:null};
+  const pool=[item.a,...item.accept].map(normalize).filter(Boolean);
+  let best=null,bestD=Infinity,bestNear=false;
+  for(const acc of pool){
+    if(got===acc)return{verdict:"correct",matched:acc,distance:0};
+    if(acc.length>=3&&hasWords(got,acc))return{verdict:"correct",matched:acc,distance:0};
+    const f=fuzzy(got,acc);
+    if(f.ok)return{verdict:"correct",matched:acc,distance:f.d};
+    if(f.d<bestD){bestD=f.d;best=acc;bestNear=f.near;}
+  }
+  return{verdict:bestNear?"near":"wrong",matched:best,distance:bestD};
+}
+
+const ROUND_LENGTH=8,SEGMENTS=["C","K","Q","T","C","K","Q","T"];
+const S={screen:"home",crew:4,queue:[],idx:0,score:0,correct:0,landed:"K",
+ spinning:false,spinAngle:0,log:[],sessionId:Math.random().toString(36).slice(2,8).toUpperCase(),
+ startedAt:Date.now(),qStart:0,timer:null,remaining:30,
+ rec:null,dictReady:false,recActive:false,micState:"idle",micError:null,usedMic:false,
+ micCheck:false,alts:[],lastInterim:"",restarts:0,makeRec:null,
+ diag:[],diagOpen:false};
+function shuffle(a){const x=a.slice();for(let i=x.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[x[i],x[j]]=[x[j],x[i]];}return x;}
+S.queue=shuffle(DECK).slice(0,ROUND_LENGTH);
+const el=id=>document.getElementById(id);
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function go(n){S.screen=n;render();window.scrollTo(0,0);}
+
+function render(){
+  el("backBtn").disabled=(S.screen==="home");
+  el("view").innerHTML={home:homeHTML,setup:setupHTML,spin:spinHTML,question:questionHTML,result:resultHTML,summary:summaryHTML}[S.screen]();
+  wire();
+}
+function homeHTML(){
+  return `
+  <div style="text-align:center;padding:14px 0 4px">
+    <h1 class="screen" style="font-size:clamp(28px,7.5vw,34px);margin-bottom:10px">Ready to spit?</h1>
+    <p class="lede" style="max-width:310px;margin:0 auto 18px">Hold the mic and say your answer. The cypher is listening.</p>
+  </div>
+  <button class="btn btn-green" id="startBtn">Start new cypher</button>
+  <div class="card">
+    <p class="eyebrow" style="margin-bottom:8px">Before you start</p>
+    <p class="note" style="margin:0">Tap the mic and say your answer out loud &mdash; your words come back as text you can fix before locking in. The first tap asks permission once. You can always type instead.</p>
+  </div>
+  ${S.dictReady?`<div class="card">
+    <p class="eyebrow" style="margin-bottom:8px">Check your mic first</p>
+    <p class="note" style="margin:0 0 10px">Your phone asks for microphone access the first time. Get it done here, not mid-question.</p>
+    <button class="btn btn-ghost" id="checkBtn">Tap and say anything</button>
+    <p class="hint" id="checkOut" style="text-align:left;margin:9px 0 0"></p>
+  </div>`:""}
+  <div id="micAvail"></div>
+  <button class="btn btn-ghost" id="diagBtn" style="font-size:14px;padding:12px">${S.diagOpen?"Hide":"Show"} mic diagnostics</button>
+  ${S.diagOpen?`<div class="card">
+    <p class="eyebrow" style="margin-bottom:8px">What the microphone is actually doing</p>
+    <pre class="diag" id="diagHead"></pre>
+    <pre class="diag tall" id="diagOut">Tap &ldquo;Check your mic&rdquo; above, or play a question, then read this.</pre>
+    <button class="btn btn-ghost" id="diagCopy">Copy log</button>
+    <p class="hint" id="diagNote" style="text-align:left;margin:9px 0 0"></p>
+  </div>`:""}
+  <div class="spacer"></div>
+  <div class="who">
+    <div class="av">&#127908;</div>
+    <div class="m"><b>Gold Chain &middot; You</b><span>Voice build &middot; ${esc(S.sessionId)}</span></div>
+    <div class="tag">Headliner</div>
+  </div>
+  <p class="foot">The hip-hop game of Skillz</p>`;
+}
+function setupHTML(){
+  const sizes=[2,3,4,5,6].map(n=>`<button class="opt" data-size="${n}" aria-pressed="${S.crew===n}"><span class="n">${n}</span><span class="s">+${n-1}</span></button>`).join("");
+  return `
+  <p class="eyebrow">New cypher / Match setup</p>
+  <h1 class="screen">Build your cypher</h1>
+  <p class="lede">Gather your crew. Set the challenge.</p>
+  <div><span class="lbl">How many in the crew?</span><div class="sizes">${sizes}</div>
+  <p class="note" style="color:var(--green)">${S.crew} players total = you + ${S.crew-1} other${S.crew-1===1?"":"s"}</p></div>
+  <p class="note">&#128241; Same room. One phone. Pass it on your turn.</p>
+  <button class="btn btn-green" id="toSpin">Continue</button>
+  <p class="foot">Up next: spin the deck</p>`;
+}
+function spinHTML(){
+  return `
+  <p class="eyebrow">Round ${S.idx+1} / Question type</p>
+  <h1 class="screen">Spin the deck</h1>
+  <p class="lede">Four categories. One spin. Tap the wheel.</p>
+  <div class="who"><div class="av">&#127908;</div>
+    <div class="m"><b>Gold Chain &middot; You</b><span>Question ${S.idx+1} of ${ROUND_LENGTH}</span></div>
+    <div class="tag">Headliner</div></div>
+  <div class="wheelwrap">
+    <button id="wheelBtn" aria-label="Tap to spin the wheel"><div class="needle">&#9660;</div>${wheelSVG()}</button>
+    <p class="hint" id="wheelHint">Tap the wheel to spin</p>
+  </div>
+  <div id="landedBox" ${S.spinning?"hidden":""}>
+    <div class="landed" style="background:#16331F;border-color:var(--green)">
+      <p class="k" style="color:var(--green)">Landed on K</p>
+      <h3>Knowledge</h3><p style="color:var(--muted)">Artists, albums and hip-hop history. Time to show what you know.</p>
+    </div></div>
+  <button class="btn btn-green" id="drawBtn" ${S.spinning?"disabled":""}>Draw Knowledge</button>
+  <p class="foot">Sample cypher &middot; Headliner &middot; Room SKL-247</p>`;
+}
+function wheelSVG(){
+  const R=118,cx=130,cy=130,fills=["#E8453C","#2F7FE8","#3DBB4E","#F2C230","#E8453C","#2F7FE8","#3DBB4E","#F2C230"];
+  let p="";
+  for(let i=0;i<8;i++){
+    const a0=(i*45-90)*Math.PI/180,a1=((i+1)*45-90)*Math.PI/180;
+    p+=`<path d="M${cx} ${cy} L${cx+R*Math.cos(a0)} ${cy+R*Math.sin(a0)} A${R} ${R} 0 0 1 ${cx+R*Math.cos(a1)} ${cy+R*Math.sin(a1)} Z" fill="${fills[i]}" stroke="#1B0B2E" stroke-width="3"/>`;
+    const am=((i*45)+22.5-90)*Math.PI/180;
+    p+=`<text x="${cx+R*0.68*Math.cos(am)}" y="${cy+R*0.68*Math.sin(am)}" font-family="Anton, sans-serif" font-size="30" fill="#2B1650" text-anchor="middle" dominant-baseline="central">${SEGMENTS[i]}</text>`;
+  }
+  return `<svg width="260" height="260" viewBox="0 0 260 260" role="img" aria-label="Category wheel">
+    <circle cx="${cx}" cy="${cy}" r="${R+6}" fill="#2B1650"/>
+    <g id="wheelSpin" style="transform-origin:${cx}px ${cy}px;transform:rotate(${S.spinAngle}deg)">${p}</g>
+    <circle cx="${cx}" cy="${cy}" r="26" fill="#2B1650" stroke="#1B0B2E" stroke-width="3"/>
+    <text x="${cx}" y="${cy}" font-size="24" text-anchor="middle" dominant-baseline="central">&#127908;</text></svg>`;
+}
+function questionHTML(){
+  const it=S.queue[S.idx];
+  return `
+  <p class="eyebrow g">Question ${S.idx+1} / Say it out loud</p>
+  <h1 class="screen">Know your history</h1>
+  <div class="qmeta">
+    <div class="deckpill"><span class="sq">K</span><span>Knowledge</span></div>
+    <span style="font-size:11px;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--muted)">100 pts</span>
+  </div>
+  <div class="qcard">
+    <div class="row"><span class="letter">K</span><span class="clock" id="clock">30 sec</span></div>
+    <p class="qtext">${esc(it.q)}</p>
+    <span class="val">Board value: 5 spaces</span>
+  </div>
+  <div id="micZone">${micZoneHTML()}</div>
+  <div>
+    <span class="lbl">Your answer</span>
+    <input class="text" id="answer" type="text" autocomplete="off" spellcheck="false" placeholder="${S.dictReady?"Tap the mic, or type it":"Type your answer"}">
+  </div>
+  <button class="btn btn-pink" id="lockBtn">Lock in answer &rarr;</button>
+  <p class="underline">Nicknames count. Fix the text before you lock it in.</p>
+  <p class="foot">Sample cypher &middot; Headliner &middot; Room SKL-247</p>`;
+}
+function micZoneHTML(){
+  if(!S.dictReady){
+    return `<div class="warn"><b>Speaking isn't available here.</b> ${esc(S.micError||"This browser won't do speech recognition. Safari on iPhone or Chrome on Android both will. Type the answer instead.")}</div>`;
+  }
+  const label={idle:"Tap the mic and say your answer",starting:"Opening the mic…",listening:"Listening — tap again when you're done",finishing:"Catching the last words…"}[S.micState]||"Tap the mic and say your answer";
+  return `
+  <div class="miczone">
+    <button id="micBtn" class="${S.micState==="listening"?"live":S.micState==="starting"||S.micState==="finishing"?"starting":""}"
+      aria-label="${S.micState==="listening"?"Stop listening":"Start speaking your answer"}">&#127908;</button>
+    <p class="hint" id="micHint">${label}</p>
+    <p id="partial"></p>
+  </div>`;
+}
+function resultHTML(){
+  const r=S.log[S.log.length-1],it=S.queue[S.idx],ok=r.verdict==="correct",last=S.idx+1>=ROUND_LENGTH;
+  return `
+  <p class="eyebrow ${ok?"g":""}">Question ${S.idx+1} / ${ok?"Result":"Alternate outcome"}</p>
+  <h1 class="screen">${ok?"That's correct!":"Not this time"}</h1>
+  <p class="lede">${ok?"You know your history. Keep that energy.":"The next turn is a fresh start."}</p>
+  <div class="verdict ${ok?"ok":"no"}">
+    <div class="mark">${ok?"&#10003;":"&#10005;"}</div>
+    <div class="big">+${ok?100:0}</div><div class="cap">Points earned</div>
+    <div class="sub">Question value: 100 pts &middot; Your total: ${S.score} pts</div>
+  </div>
+  <div class="card review">
+    <p class="q">${esc(it.q)}</p>
+    <div class="ansrow ${ok?"good":"bad"}">
+      <span class="ic">${ok?"&#10003;":"&#10005;"}</span>
+      <span class="txt">${r.typed?esc(r.typed):"<em style='color:var(--dim)'>Nothing said</em>"}</span>
+      <span class="lab">${r.spoke?"You said":"You typed"}</span>
+    </div>
+    ${ok?"":`<div class="ansrow good"><span class="ic">&#10003;</span><span class="txt">${esc(it.a)}</span><span class="lab">Answer</span></div>`}
+    ${(r.spoke&&r.heard&&normalize(r.heard)!==normalize(r.typed))?`<p class="note" style="color:var(--violet)">Mic heard: &ldquo;${esc(r.heard)}&rdquo; &mdash; edited before locking in.</p>`:""}
+    <p class="note">${esc(it.note)}</p>
+    ${r.verdict==="near"?`<p class="note" style="color:var(--amber)">Close call: logged as a near miss, not a wrong answer.</p>`:""}
+    <div class="movement"><span class="ar">${ok?"&#8599;":"&#8600;"}</span>
+      <span><b>Move ${ok?"forward":"back"} 5 spaces</b><em>Board movement is separate from question points.</em></span></div>
+  </div>
+  <button class="btn ${ok?"btn-green":"btn-pink"}" id="nextBtn">${last?"See session results":"Pass the mic"} &rarr;</button>
+  <p class="foot">${last?"End of round":"Next turn: spin the deck again"}</p>`;
+}
+function summaryHTML(){
+  const near=S.log.filter(r=>r.verdict==="near").length;
+  const spoken=S.log.filter(r=>r.spoke).length;
+  const edited=S.log.filter(r=>r.spoke&&r.heard&&normalize(r.heard)!==normalize(r.typed)).length;
+  const rows=S.log.map((r,i)=>`
+    <div class="logrow"><p class="lq">${i+1}. ${esc(r.question)}</p>
+    <div class="la">
+      <span class="pill ${r.verdict==="correct"?"ok":r.verdict==="near"?"near":"no"}">${r.verdict==="correct"?"Correct":r.verdict==="near"?"Near miss":"Wrong"}</span>
+      ${r.spoke?'<span class="pill spoke">Spoken</span>':""}
+      <span class="typed">${r.typed?esc(r.typed):"<em style='color:var(--dim)'>blank</em>"}</span>
+      <span style="color:var(--dim);font-size:12px">&rarr; ${esc(r.answer)}</span>
+      <span style="color:var(--dim);font-size:11.5px">${r.seconds}s</span>
+    </div>
+    ${(r.spoke&&r.heard&&normalize(r.heard)!==normalize(r.typed))?`<p class="note" style="margin-top:4px;color:var(--violet);font-size:12px">mic heard: "${esc(r.heard)}"</p>`:""}
+    </div>`).join("");
+  return `
+  <p class="eyebrow g">Session complete</p>
+  <h1 class="screen">Round results</h1>
+  <p class="lede">Session ${esc(S.sessionId)}</p>
+  <div class="stats">
+    <div class="stat"><b style="color:var(--green)">${S.correct}</b><span>Correct</span></div>
+    <div class="stat"><b style="color:var(--violet)">${spoken}</b><span>Spoken</span></div>
+    <div class="stat"><b style="color:var(--amber)">${near}</b><span>Near miss</span></div>
+  </div>
+  ${edited?`<p class="note" style="text-align:center">${edited} spoken answer${edited===1?" was":"s were"} edited before locking in &mdash; the mic text and the final text are both logged.</p>`:""}
+  <div class="card"><p class="eyebrow" style="margin-bottom:6px">Every answer</p>${rows}</div>
+  <p class="hint" id="saveLine">Saving this session&hellip;</p>
+  <div class="card">
+    <p class="eyebrow" style="margin-bottom:8px">Get the data off this phone</p>
+    <p class="note" style="margin:0 0 10px">Sessions are stored in this browser only. Export before you hand the phone to the next tester, or at the end of the day.</p>
+    <div class="exportrow">
+      <button class="btn btn-ghost" id="copyBtn">Copy JSON</button>
+      <button class="btn btn-ghost" id="dlBtn">Download</button>
+    </div>
+    <p class="hint" id="exportNote" style="text-align:left;margin:9px 0 0"></p>
+    <button class="btn btn-ghost" id="clearBtn" style="margin-top:9px;border-color:var(--pink);color:#FF9BC5">Clear stored sessions</button>
+  </div>
+  <button class="btn btn-green" id="againBtn">Run it back</button>
+  <p class="foot">Near misses show where the accepted-answer list needs widening</p>`;
+}
+
+function wire(){
+  const on=(id,fn,ev="click")=>{const n=el(id);if(n)n.addEventListener(ev,fn);};
+  on("startBtn",()=>{releaseMic();go("setup");});
+  on("checkBtn",micCheckStart);
+  on("diagBtn",()=>{S.diagOpen=!S.diagOpen;render();});
+  on("diagCopy",copyDiag);
+  if(S.diagOpen)paintDiag();
+  document.querySelectorAll("[data-size]").forEach(b=>b.addEventListener("click",()=>{S.crew=+b.dataset.size;render();}));
+  on("toSpin",()=>{S.spinAngle=0;S.spinning=false;go("spin");});
+  on("wheelBtn",spin);
+  on("drawBtn",startQuestion);
+  on("micBtn",toggleMic);
+  on("lockBtn",()=>submit(false));
+  const a=el("answer");
+  if(a){a.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();submit(false);}});}
+  on("nextBtn",()=>{S.idx++;if(S.idx>=ROUND_LENGTH){go("summary");saveSession();}else{S.spinAngle=0;S.spinning=false;go("spin");}});
+  on("copyBtn",copyResults);
+  on("dlBtn",downloadResults);
+  on("clearBtn",clearResults);
+  on("againBtn",()=>{S.queue=shuffle(DECK).slice(0,ROUND_LENGTH);S.idx=0;S.score=0;S.correct=0;S.log=[];
+    S.startedAt=Date.now();S.sessionId=Math.random().toString(36).slice(2,8).toUpperCase();S.spinAngle=0;go("home");});
+  if(S.screen==="home")paintAvail();
+}
+function paintAvail(){
+  const n=el("micAvail");
+  if(!n)return;
+  n.innerHTML=S.dictReady?"":
+    `<div class="warn" style="margin-top:4px"><b>Heads up.</b> ${esc(S.micError||"This browser won't do speech recognition. Safari on iPhone or Chrome on Android both will \u2014 the round still works by typing here.")}</div>`;
+}
+el("backBtn").addEventListener("click",()=>{
+  stopClock();stopMic();
+  const back={setup:"home",spin:"setup",question:"spin",result:"spin",summary:"home"}[S.screen];
+  if(back)go(back);
+});
+
+function spin(){
+  if(S.spinning)return;S.spinning=true;
+  const box=el("landedBox"),draw=el("drawBtn"),hint=el("wheelHint");
+  if(box)box.hidden=true; if(draw)draw.disabled=true; if(hint)hint.textContent="Spinning…";
+  const target=[1,5][Math.floor(Math.random()*2)];
+  const final=(4+Math.floor(Math.random()*3))*360+(360-(target*45+22.5))+((Math.random()*18)-9);
+  const g=el("wheelSpin");
+  requestAnimationFrame(()=>{if(g)g.style.transform=`rotate(${final}deg)`;});
+  const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  setTimeout(()=>{S.spinAngle=final%360;S.landed="K";S.spinning=false;
+    if(hint)hint.textContent="Tap again to re-spin";
+    if(box)box.hidden=false;
+    if(draw){draw.disabled=false;draw.textContent="Draw Knowledge →";}
+  },reduce?320:4050);
+}
+function startQuestion(){
+  S.qStart=Date.now();S.remaining=30;S.usedMic=false;S.heard="";
+  S.alts=[];S.lastInterim="";S.restarts=0;
+  go("question");startClock();
+}
+function startClock(){stopClock();S.timer=setInterval(()=>{
+  S.remaining--;const c=el("clock");
+  if(c){c.textContent=S.remaining+" sec";c.classList.toggle("low",S.remaining<=10);}
+  if(S.remaining<=0)submit(true);
+},1000);}
+function stopClock(){if(S.timer){clearInterval(S.timer);S.timer=null;}}
+
+/* The browser holds the microphone. start() must run straight from the
+   viewer's tap, and iOS closes the recognizer after each utterance. */
+function toggleMic(){
+  if(!S.dictReady)return;
+  if(S.recActive){ stopMic(); return; }
+  S.usedMic=true;
+  startMic();
+}
+function startMic(){
+  if(S.recActive)return;
+  /* Hand the microphone back before asking for it again. An old recognizer
+     that was never stopped keeps holding the audio session, and the new one
+     then opens onto permanent silence: it reports "listening" and no audio
+     ever reaches it. Abandoning the object is not releasing it. */
+  releaseMic();
+  const r=S.makeRec&&S.makeRec();
+  if(!r){ S.dictReady=false; render(); return; }
+  S.rec=r;
+  dlog("start() requested");
+  try{ r.start();S.recActive=true;S.micState="starting";paintMic(); }
+  catch(e){ S.recActive=false; dlog("start() THREW "+(e&&e.name||e)); }
+}
+function stopMic(){ if(S.rec&&S.recActive){ try{S.rec.stop();}catch(e){} } }
+/* Cut the current recognizer loose for good: detach its handlers so a late
+   event can't land, then abort rather than stop, because stop waits for
+   results and keeps the microphone while it does. */
+function releaseMic(){
+  const r=S.rec;
+  /* Cleared here, not in onend: this detaches the handlers, so onend will
+     never run, and a check left mid-flight would otherwise keep diverting
+     every later result away from the answer field. */
+  S.micCheck=false;
+  if(!r)return;
+  S.rec=null;S.recActive=false;
+  try{ r.onresult=r.onend=r.onerror=r.onstart=null;
+    ["audiostart","soundstart","speechstart","speechend","soundend","audioend","nomatch"]
+      .forEach(n=>{ r["on"+n]=null; }); }catch(e){}
+  try{ r.abort(); }catch(e){ try{ r.stop(); }catch(e2){} }
+  dlog("released previous recognizer");
+}
+/* The first start() raises the OS permission prompt, so the home screen
+   offers to get it over with before a question is on the clock. */
+function micCheckStart(){
+  if(!S.dictReady)return;
+  const o=el("checkOut"); if(o)o.textContent="Listening\u2026 say anything.";
+  S.micCheck=true;
+  startMic();
+}
+function onMicError(name){
+  const msg={
+    "no-speech":"Didn't catch anything. Tap the mic and try again.",
+    "aborted":"",
+    "audio-capture":"No microphone found on this device. Type the answer instead.",
+    "not-allowed":"Microphone access was blocked. Allow it in your browser's site settings, then reload.",
+    "service-not-allowed":"Speech recognition was refused. This page has to be served over https \u2014 check the address bar.",
+    "network":"The speech service couldn't be reached. Check your connection or type it.",
+    "language-not-supported":"This language isn't supported for speech here. Type instead."
+  }[name];
+  if(name==="not-allowed"||name==="service-not-allowed"||name==="audio-capture"){
+    S.dictReady=false;S.micError=msg;render();return;
+  }
+  const h=el("micHint"); if(h&&msg)h.textContent=msg;
+}
+/* One place where heard words reach the field, so a settled result and a
+   salvaged interim behave identically. */
+function commitHeard(text){
+  const f=el("answer"); if(!f)return;
+  const piece=f.value.trim()===""?String(text||"").replace(/^\s+/,""):" "+String(text||"").trim();
+  if(!piece.trim())return;
+  f.value=f.value+piece;
+  S.heard=(S.heard||"")+piece;
+  const p=el("partial"); if(p)p.textContent="";
+}
+/* The recognizer fires a fixed sequence, and WHERE it stops says what is
+   wrong: no onstart means it never opened; onstart with no audiostart means
+   the mic gave nothing; audiostart with no speechstart means it heard no
+   voice; speechstart with no result means the service failed. */
+function dlog(m){
+  const t=((Date.now()-S.startedAt)/1000).toFixed(1);
+  S.diag.push("+"+t+"s  "+m);
+  if(S.diag.length>300)S.diag.shift();
+  const n=el("diagOut");
+  if(n){ n.textContent=S.diag.slice(-60).join("\n"); n.scrollTop=n.scrollHeight; }
+}
+function diagHead(){
+  return "page    "+location.protocol+"//"+location.host
+    +"\nsecure  "+(window.isSecureContext?"yes":"NO \u2014 the mic will never open")
+    +"\nonline  "+(navigator.onLine?"yes":"NO")
+    +"\nspeech  "+(!!(window.SpeechRecognition||window.webkitSpeechRecognition))
+    +"\nscreen  "+screen.width+"x"+screen.height
+    +"\nua      "+navigator.userAgent;
+}
+function paintDiag(){
+  const h=el("diagHead"); if(h)h.textContent=diagHead();
+  const n=el("diagOut"); if(n&&S.diag.length)n.textContent=S.diag.slice(-60).join("\n");
+}
+function copyDiag(){
+  const note=el("diagNote"),txt=diagHead()+"\n\n"+S.diag.join("\n");
+  navigator.clipboard.writeText(txt).then(
+    ()=>{ if(note)note.textContent="Copied. Paste the whole thing back to Claude."; },
+    ()=>{ if(note)note.textContent="Clipboard refused \u2014 screenshot the log instead."; });
+}
+
+function paintMic(){
+  const b=el("micBtn"),h=el("micHint");
+  if(b){ b.className=S.micState==="listening"?"live":(S.micState==="starting"||S.micState==="finishing")?"starting":""; }
+  if(S.micCheck)return;
+  if(h){
+    h.textContent={idle:"Tap the mic and say your answer",starting:"Opening the mic…",
+      listening:"Listening — tap again when you're done",finishing:"Catching the last words…"}[S.micState];
+  }
+}
+
+function submit(expired){
+  if(S.screen!=="question")return;
+  stopClock();stopMic();
+  const it=S.queue[S.idx];
+  const f=el("answer");
+  const typed=f?f.value.trim():"";
+  let r=judge(typed,it),word=typed,rescued="";
+  /* A rapper name carries no sentence context, so the recognizer's top
+     guess is wrong often. Before marking it wrong, check the other
+     guesses it offered — but only while the field still holds what the
+     mic put there, since an edit is the player's own answer. */
+  if(r.verdict==="wrong"&&S.alts.length>1&&normalize(typed)===normalize(S.alts[0])){
+    for(let i=1;i<S.alts.length;i++){
+      const ar=judge(S.alts[i],it);
+      if(ar.verdict==="correct"){ r=ar;word=S.alts[i].trim();rescued=typed;break; }
+    }
+  }
+  const seconds=Math.max(0,Math.round((Date.now()-S.qStart)/1000));
+  if(r.verdict==="correct"){S.score+=100;S.correct++;}
+  S.log.push({n:S.log.length+1,questionId:it.id,question:it.q,answer:it.a,
+    typed:word,rawTyped:typed,rescued,heard:S.heard||"",spoke:!!S.usedMic,
+    verdict:r.verdict,matched:r.matched,distance:r.distance,
+    seconds,expired:!!expired});
+  go("result");
+}
+
+const LSKEY="skillz_knowledge_voice_sessions";
+function allSessions(){
+  try{ return JSON.parse(localStorage.getItem(LSKEY)||"[]"); }catch(e){ return []; }
+}
+function saveSession(){
+  const line=el("saveLine");
+  const rec={
+    sessionId:S.sessionId,crew:S.crew,mode:"knowledge-voice",
+    speechAvailable:!!S.dictReady,userAgent:navigator.userAgent,
+    correct:S.correct,near:S.log.filter(r=>r.verdict==="near").length,
+    spoken:S.log.filter(r=>r.spoke).length,
+    misheard:S.log.filter(r=>r.rescued).length,
+    edited:S.log.filter(r=>r.spoke&&r.heard&&normalize(r.heard)!==normalize(r.typed)).length,
+    total:S.log.length,score:S.score,
+    startedAt:S.startedAt,finishedAt:Date.now(),answers:S.log};
+  let all=allSessions();
+  all.push(rec);
+  try{
+    localStorage.setItem(LSKEY,JSON.stringify(all));
+    if(line)line.textContent="Saved on this device \u2014 "+all.length+" session"+(all.length===1?"":"s")+" stored.";
+  }catch(e){
+    if(line)line.textContent="Couldn't save to this device \u2014 copy the results below before closing.";
+  }
+}
+async function copyResults(){
+  const note=el("exportNote");
+  try{ await navigator.clipboard.writeText(JSON.stringify(allSessions(),null,2));
+    if(note)note.textContent="Copied every session on this device to the clipboard."; }
+  catch(e){ if(note)note.textContent="Clipboard refused \u2014 use Download instead."; }
+}
+function downloadResults(){
+  const note=el("exportNote");
+  try{
+    const blob=new Blob([JSON.stringify(allSessions(),null,2)],{type:"application/json"});
+    const a=document.createElement("a"),url=URL.createObjectURL(blob);
+    a.href=url;a.download="skillz-knowledge-voice-"+new Date().toISOString().slice(0,10)+".json";
+    document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),4000);
+    if(note)note.textContent="Downloaded every session on this device.";
+  }catch(e){ if(note)note.textContent="Download refused \u2014 use Copy instead."; }
+}
+function clearResults(){
+  try{ localStorage.removeItem(LSKEY); }catch(e){}
+  const note=el("exportNote"); if(note)note.textContent="Cleared. New sessions start from zero.";
+}
+
+/* A recognizer is built per turn rather than held, so this only registers
+   the factory. Handlers check they belong to the current recognizer, since
+   a discarded one can still deliver a late event. */
+(function(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){ S.dictReady=false; return; }
+  try{ new SR(); }catch(e){ S.dictReady=false; return; }
+  let seq=0;
+  S.makeRec=function(){
+  let r;
+  try{ r=new SR(); }catch(e){ return null; }
+  const id=++seq; r.__id=id;
+  const mine=()=>S.rec&&S.rec.__id===id;
+  /* Several alternatives, because a name carries no sentence context and the
+     top guess is wrong more often than not. */
+  r.continuous=false;r.interimResults=true;r.lang="en-US";r.maxAlternatives=5;
+  ["audiostart","soundstart","speechstart","speechend","soundend","audioend","nomatch"]
+    .forEach(n=>{ r["on"+n]=()=>{ if(mine())dlog("  "+n); }; });
+  r.onstart=()=>{
+    if(!mine())return;
+    dlog("onstart \u2014 mic open (rec #"+id+")");
+    S.recActive=true;S.micState="listening";paintMic();
+  };
+  r.onresult=(e)=>{
+    if(!mine())return;
+    let interim="",final="";
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      const res=e.results[i];
+      if(res.isFinal){
+        final+=res[0].transcript;
+        for(let a=0;a<res.length;a++)if(res[a]&&res[a].transcript)S.alts.push(res[a].transcript);
+      } else interim+=res[0].transcript;
+    }
+    if(interim)S.lastInterim=interim;
+    if(final)dlog("RESULT final \u201c"+final.trim()+"\u201d  alts: "+S.alts.length);
+    else if(interim)dlog("  interim \u201c"+interim.trim()+"\u201d");
+    if(S.micCheck){
+      const o=el("checkOut");
+      if(o&&(final||interim))o.textContent="Heard: \u201c"+(final||interim).trim()+"\u201d";
+      return;
+    }
+    const p=el("partial"); if(p)p.textContent=interim;
+    if(final)commitHeard(final);
+  };
+  r.onerror=(e)=>{ if(!mine())return;
+    dlog("ERROR "+((e&&e.error)||"unknown")+(e&&e.message?" \u2014 "+e.message:""));
+    S.recActive=false; onMicError(e&&e.error); };
+  r.onend=()=>{
+    if(!mine())return;
+    dlog("onend (rec #"+id+")");
+    S.recActive=false;S.micState="idle";
+    const p=el("partial"); if(p)p.textContent="";
+    if(S.micCheck){
+      S.micCheck=false;paintMic();
+      const o=el("checkOut");
+      if(o&&/^Listening/.test(o.textContent))o.textContent="Nothing came through. Tap again, or check the mic isn't muted.";
+      else if(o&&o.textContent)o.textContent+=" \u2014 mic works. You're set.";
+      return;
+    }
+    const live=S.screen==="question"&&S.remaining>0;
+    /* A settled result doesn't always arrive before the recognizer closes,
+       so the last live guess is better than losing the answer outright. */
+    if(live&&S.lastInterim){ commitHeard(S.lastInterim); S.lastInterim=""; }
+    /* iOS shuts the recognizer after a second or two of quiet, so covering a
+       thirty-second question takes several. The button stays lit through the
+       gap, because a mic that visibly dies stops people talking. */
+    if(live&&S.usedMic&&S.restarts<25){
+      S.restarts++;S.micState="starting";paintMic();
+      setTimeout(()=>{
+        if(S.screen==="question"&&S.remaining>0&&!S.recActive)startMic();
+      },60);
+      return;
+    }
+    paintMic();
+  };
+  return r;
+  };
+  S.dictReady=true;
+})();
+
+render();
+</script>
+</body>
+</html>
